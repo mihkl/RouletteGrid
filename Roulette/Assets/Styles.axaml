@@ -1,0 +1,59 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<!-- Add Controls for Previewer Here -->
+		</Border>
+	</Design.PreviewWith>
+
+	<!-- Add Styles Here -->
+	<Style Selector="TextBlock.Red">
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="Foreground" Value="Black"/>
+		<Setter Property="HorizontalAlignment" Value="Center"/>
+		<Setter Property="FontSize" Value="20"/>
+		<Setter Property="FontWeight" Value="SemiBold"/>
+	</Style>
+
+	<Style Selector="TextBlock.Black">
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="Foreground" Value="White"/>
+		<Setter Property="HorizontalAlignment" Value="Center"/>
+		<Setter Property="FontSize" Value="20"/>
+		<Setter Property="FontWeight" Value="SemiBold"/>
+	</Style>
+
+	<Style Selector="Border.General">
+		<Setter	Property="BorderThickness" Value="1"/>
+		<Setter Property="CornerRadius" Value="3"/>
+		<Setter Property="Padding" Value="15"/>
+		<Setter Property="Margin" Value="2"/>
+		<Setter Property="BorderBrush" Value="LightGray"/>
+		<Setter Property="Background" Value="Black"/>
+	</Style>
+
+	<Style Selector="Border.Black">
+		<Setter Property="Background" Value="#0f1606"/>
+		<Setter Property="BorderBrush" Value="#008e7b"/>
+	</Style>
+
+	<Style Selector="Border.Red">
+		<Setter Property="Background" Value="Red"/>
+	</Style>
+
+	<Style Selector="Border.Rotated">
+		<Setter Property="Margin" Value="13"/>
+		<Setter Property="Background" Value="Black"/>
+		<Setter Property="BorderBrush" Value="LightGray"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="CornerRadius" Value="3"/>
+		<Setter Property="Padding" Value="7"/>
+	</Style>
+
+	<Style Selector="TextBlock.Rotated">
+		<Setter Property="Foreground" Value="White"/>
+		<Setter Property="TextWrapping" Value="Wrap"/>
+		<Setter Property="ClipToBounds" Value="True"/>
+		<Setter Property="FontSize" Value="20"/>
+	</Style>
+</Styles>
