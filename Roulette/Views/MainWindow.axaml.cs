@@ -10,11 +10,14 @@ using System.Text.Json;
 using System.Collections.Generic;
 using Roulette.HelperMethods;
 using Roulette.Animation;
+using static System.Net.Mime.MediaTypeNames;
+using System.Data.Common;
+using System.Xml.Linq;
 
 
 namespace Roulette.Views;
 
-public partial class MainWindow: Window {
+public partial class MainWindow: Window { 
     private TcpListener? tcpListener;
     public MainWindow() {
         InitializeComponent();
@@ -25,15 +28,17 @@ public partial class MainWindow: Window {
 
         GenerateRotated();
 
-        GenerateSpecialBets(grid, 3, 1, 4, "1st 12");
-        GenerateSpecialBets(grid, 3, 5, 4, "2nd 12");
-        GenerateSpecialBets(grid, 3, 9, 4, "3rd 12");
-        GenerateSpecialBets(grid, 4, 1, 2, "1 to 18");
-        GenerateSpecialBets(grid, 4, 3, 2, "Even");
-        GenerateSpecialBets(grid, 4, 5, 2, "");
-        GenerateSpecialBets(grid, 4, 7, 2, "", "Red");
-        GenerateSpecialBets(grid, 4, 9, 2, "Odd");
-        GenerateSpecialBets(grid, 4, 11, 2, "19 to 36");
+        GenerateSpecialBets(grid, 3, 1, 4, "1st 12", "1st 12");
+        GenerateSpecialBets(grid, 3, 5, 4, "2nd 12", "2nd 12");
+        GenerateSpecialBets(grid, 3, 9, 4, "3rd 12", "3rd 12");
+        GenerateSpecialBets(grid, 4, 1, 2, "1 to 18", "1 to 18");
+        GenerateSpecialBets(grid, 4, 3, 2, "Even", "Even");
+        GenerateSpecialBets(grid, 4, 5, 2, "", "Black");
+        GenerateSpecialBets(grid, 4, 7, 2, "", "Red", "Red");
+        GenerateSpecialBets(grid, 4, 9, 2, "Odd", "Odd");
+        GenerateSpecialBets(grid, 4, 11, 2, "19 to 36", "19 to 36");
+
+        GenerateZero();
     }
     // TCP methods below
     private async void InitializeTcpListener() {
@@ -48,7 +53,7 @@ public partial class MainWindow: Window {
             TcpClient client = await tcpListener.AcceptTcpClientAsync();
             NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[1024];
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+            int bytesRead = await stream.ReadAsync(buffer);
             string jsonString = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
             var winNr = ParseJson(jsonString);
@@ -65,13 +70,14 @@ public partial class MainWindow: Window {
         return winNr;
     }
     // Methods to find which elements to animate below
-    private string FindWinColor(int winNr) {
+    private static string FindWinColor(int winNr) {
         string winColor;
-        if (winNr is >= 1 and <= 10 or >= 19 and <= 28) winColor = winNr % 2 == 0 ? "" : "Red";
-        else winColor = winNr % 2 == 0 ? "Red" : "";
+        if (winNr is >= 1 and <= 10 or >= 19 and <= 28) winColor = winNr % 2 == 0 ? "Black" : "Red";
+        else winColor = winNr % 2 == 0 ? "Red" : "Black";
         return winColor;
     }
     private (string oddOrEven, string firstSecondOrThird, string highOrLow, string winColor, string winRow) FindWinConditions(int winNr) {
+        if (winNr == 0) return ("", "", "", "", "");
         string oddOrEven = winNr % 2 == 0 ? "Even" : "Odd";
         string firstSecondOrThird = winNr == 0 ? "0" : winNr < 13 ? "1st 12" : winNr < 25 ? "2nd 12" : "3rd 12";
         string highOrLow = winNr < 19 ? "1 to 18" : "19 to 36";
@@ -86,7 +92,7 @@ public partial class MainWindow: Window {
                BorderProperties.GetName(border) == highOrLow ||
                BorderProperties.GetName(border) == firstSecondOrThird ||
                BorderProperties.GetName(border) == winRow ||
-              (BorderProperties.GetName(border) == string.Empty && border.Classes.Contains(winColor));
+               BorderProperties.GetName(border) == winColor;
     }
     private static bool IsTextBlockToAnimate(TextBlock textBlock) {
         return textBlock.Classes.Contains("Black") || textBlock.Classes.Contains("Rotated");
@@ -151,7 +157,7 @@ public partial class MainWindow: Window {
             }
         }
     }
-    private static void GenerateSpecialBets(Grid grid, int row, int column, int columnSpan, string text, string classes = "") {
+    private static void GenerateSpecialBets(Grid grid, int row, int column, int columnSpan, string text, string name, string classes = "") {
         var border = new Border();
         var textBlock = new TextBlock();
 
@@ -159,7 +165,7 @@ public partial class MainWindow: Window {
         Grid.SetColumn(border, column);
         Grid.SetColumnSpan(border, columnSpan);
 
-        BorderProperties.SetName(border, text);
+        BorderProperties.SetName(border, name);
         border.Classes.Add(classes);
         border.Classes.Add("General");
 
@@ -191,6 +197,30 @@ public partial class MainWindow: Window {
             border.Child = textBlock;
             grid.Children.Add(border);
         }
+    }
+    private void GenerateZero() {
+        var border = new Border();
+        var textBlock = new TextBlock();
+
+        Grid.SetRow(border, 0);
+        Grid.SetColumn(border, 0);
+        Grid.SetRowSpan(border, 3);
+
+        BorderProperties.SetName(border, "0");
+        border.Background = SolidColorBrush.Parse("#0bb01b");
+        border.BorderBrush = SolidColorBrush.Parse("#0bb01b");
+        border.CornerRadius = new CornerRadius(100, 1, 1, 100);
+        border.Padding = new Thickness(20);
+        border.Margin = new Thickness(1, 1, 3, 1);
+
+        textBlock.Text = "0";
+        textBlock.FontSize = 20;
+        textBlock.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+        textBlock.Foreground = SolidColorBrush.Parse("White");
+
+        border.Child = textBlock;
+        grid.Children.Add(border);
+     
     }
 
 }
