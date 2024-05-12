@@ -9,11 +9,7 @@ using System.Net;
 using System.Text.Json;
 using System.Collections.Generic;
 using Roulette.HelperMethods;
-using Roulette.Animation;
-using static System.Net.Mime.MediaTypeNames;
-using System.Data.Common;
-using System.Xml.Linq;
-
+using static Roulette.Animation.GridAnimation;
 
 namespace Roulette.Views;
 
@@ -112,19 +108,19 @@ public partial class MainWindow: Window {
             foreach (Control control in grid.Children) {
                 if (control is Border border && IsBorderToAnimate(border, winNrString, winConditions)) {
                     var originalBorderBrush = border.Background ?? Brushes.Transparent;
-                    animationTasks.Add(GridAnimation.AnimateBorderColorAsync(border, TimeSpan.FromSeconds(1), originalBorderBrush, winBorderBrush));
+                    animationTasks.Add(AnimateBorderColorAsync(border, TimeSpan.FromSeconds(1), originalBorderBrush, winBorderBrush));
                     originalBorderBrushes.Add(border, originalBorderBrush);
 
                     if (border.Child is TextBlock textBlock && IsTextBlockToAnimate(textBlock)) {
                         var originalTextBrush = textBlock.Foreground ?? Brushes.White;
-                        animationTasks.Add(GridAnimation.AnimateTextColorAsync(textBlock, TimeSpan.FromSeconds(1), originalTextBrush, winTextBrush));
+                        animationTasks.Add(AnimateTextColorAsync(textBlock, TimeSpan.FromSeconds(1), originalTextBrush, winTextBrush));
                         originalTextBrushes.Add(textBlock, originalTextBrush);
                     }
                 }
             }
             await Task.WhenAll(animationTasks);
             await Task.Delay(TimeSpan.FromSeconds(10));
-            await GridAnimation.RevertAnimationsAsync(originalBorderBrushes, originalTextBrushes);
+            await RevertAnimationsAsync(originalBorderBrushes, originalTextBrushes);
         });
     }
     // Only grid generation methods below
