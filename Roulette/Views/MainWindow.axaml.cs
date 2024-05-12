@@ -45,7 +45,6 @@ public partial class MainWindow: Window {
                     textBlock.Padding = new Thickness(5);
                 }
                 textBlock.Text = (number).ToString();
-                
 
                 border.Child = textBlock;
 
